@@ -4,6 +4,13 @@ pipeline {
         jdk 'JDK-17'
         maven 'maven3.9.6'
     }
+    environment {
+        // Define environment variables
+        SONAR_ORGANIZATION = "nguyenvanhadncntt"
+        SONAR_HOST_URL = "https://sonarcloud.io"
+        SONAR_PROJECT_KEY = "nguyenvanhadncntt_register-app"
+        PROJECT_NAME = "register-app"
+    }
     stages {
         stage('clean WorkSpace') {
             steps {
@@ -29,7 +36,7 @@ pipeline {
            steps {
 	           script {
 		            withSonarQubeEnv(credentialsId: 'sonar-key') { 
-                        sh "mvn sonar:sonar -Dsonar.organization=nguyenvanhadncntt -Dsonar.projectKey=nguyenvanhadncntt_register-app -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io"
+                        sh "mvn sonar:sonar -Dsonar.organization=${env.SONAR_ORGANIZATION} -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.host.url=${env.SONAR_HOST_URL} -Dsonar.projectName=${env.PROJECT_NAME}"
 		            }
 	           }	
             }
