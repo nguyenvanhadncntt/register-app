@@ -29,7 +29,7 @@ pipeline {
            steps {
 	           script {
 		            withSonarQubeEnv(credentialsId: 'sonar-key') { 
-                        sh "mvn sonar:sonar"
+                        sh "mvn sonar:sonar -Dsonar.organization=nguyenvanhadncntt -Dsonar.projectKey=nguyenvanhadncntt_register-app -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io"
 		            }
 	           }	
             }
