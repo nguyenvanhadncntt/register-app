@@ -18,7 +18,7 @@ pipeline {
         DOCKER_USER = "hanguyenv"
         DOCKER_CREDENTIALS_PASS_NAME = "dockerhub"
         RELEASE_VERSION = "1.0"
-        IMAGE_NAME = "${DOCKER_USER}/${PROJECT_NAME}-app:${RELEASE_VERSION}"
+        IMAGE_NAME = "${DOCKER_USER}/${PROJECT_NAME}:${RELEASE_VERSION}"
         IMAGE_TAG = "${RELEASE_VERSION}-${BUILD_NUMBER}"
     }
 
