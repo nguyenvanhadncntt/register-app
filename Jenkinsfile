@@ -15,6 +15,11 @@ pipeline {
         SONAR_HOST_URL = "https://sonarcloud.io"
         SONAR_PROJECT_KEY = "nguyenvanhadncntt_register-app"
         PROJECT_NAME = "register-app"
+        DOCKER_USER = "hanguyenv"
+        DOCKER_CREDENTIALS_PASS_NAME = "dockerhub"
+        RELEASE_VERSION = "1.0"
+        IMAGE_NAME = "${DOCKER_USER}/${PROJECT_NAME}-app:${RELEASE_VERSION}"
+        IMAGE_TAG = "${RELEASE_VERSION}-${BUILD_NUMBER}"
     }
 
     stages {
@@ -64,6 +69,17 @@ pipeline {
                     waitForQualityGate abortPipeline: false, credentialsId: 'sonar-key'
                 }
             }
+        }
+
+        stage('Build And Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('', env.DOCKER_CREDENTIALS_PASS_NAME) {
+                        docker.build(env.IMAGE_NAME, '-f Dockerfile .').push('latest')
+                    }
+                }
+            }
+
         }
     }
 }
