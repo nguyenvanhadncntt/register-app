@@ -18,7 +18,8 @@ pipeline {
         DOCKER_USER = "hanguyenv"
         DOCKER_CREDENTIALS_PASS_NAME = "dockerhub"
         RELEASE_VERSION = "1.0"
-        IMAGE_NAME = "${DOCKER_USER}/${PROJECT_NAME}:${RELEASE_VERSION}"
+        IMAGE_NAME = "${DOCKER_USER}/${PROJECT_NAME}"
+        IMAGE_NAME_VERSION = "${DOCKER_USER}/${PROJECT_NAME}:${RELEASE_VERSION}"
         IMAGE_TAG = "${RELEASE_VERSION}-${BUILD_NUMBER}"
     }
 
@@ -75,14 +76,29 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('', env.DOCKER_CREDENTIALS_PASS_NAME) {
-                        docker.build(env.IMAGE_NAME, '-f Dockerfile .').push('latest')
+                        docker.build(env.IMAGE_NAME_VERSION, '-f Dockerfile .').push('latest')
                     }
                 }
             }
+        }
 
+        stage('Trivy scan') {
+            steps {
+                script {
+                    sh "docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ${env.IMAGE_NAME}:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table"
+                }
+            }
+        }
+
+        stage('Clean Docker Image') {
+            steps {
+                script {
+                    sh "docker rmi ${env.IMAGE_NAME}:latest"
+                    sh "docker rmi ${env.IMAGE_NAME_VERSION}:latest"
+                    sh "docker rmi ${env.IMAGE_NAME}:${env.IMAGE_TAG}"
+                }
+            }
         }
     }
 }
-
-
 
